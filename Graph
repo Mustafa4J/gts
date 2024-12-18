@@ -1,0 +1,66 @@
+package de.hpi;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Graph {
+    Set<Node> nodes;
+    Set<Edge> edges;
+    Map<Edge, Node> sources;
+    Map<Edge, Node> targets;
+
+
+    public Graph() {
+        this.nodes = new HashSet<>();
+        this.edges = new HashSet<>();
+        this.sources = new HashMap<>();
+        this.targets = new HashMap<>();
+    }
+
+    public Graph(Set<Node> nodes) {
+        this();
+        this.nodes = nodes;
+    }
+
+    public Graph(String[] nodeNames) {
+        this();
+        this.nodes = Arrays.stream(nodeNames).map(Node::new).collect(Collectors.toSet());
+    }
+
+    public Set<Node> getNodes() {
+        return nodes;
+    }
+
+    public Set<Edge> getEdges() {
+        return edges;
+    }
+
+    public void addEdge(Edge edge, Node source, Node target) throws IllegalArgumentException {
+        if (edges.stream().map(n -> n.name).noneMatch(n -> n.equals(edge.getName()))) {
+            if (nodes.contains(source) && nodes.contains(target)) {
+                edges.add(edge);
+                sources.put(edge, source);
+                targets.put(edge, target);
+            } else throw new IllegalArgumentException("At least one node is not part of the graph");
+        } else throw new IllegalArgumentException("Name of edge already in use");
+
+    }
+
+    public void addNode(Node node) {
+        if (nodes.stream().map(n -> n.name).noneMatch(n -> n.equals(node.getName()))) {
+            nodes.add(node);
+        } else throw new IllegalArgumentException("Name of node already in use");
+    }
+
+    public Set<String> getNodeNames() {
+        return nodes.stream().map(Node::getName).collect(Collectors.toSet());
+    }
+
+    public long getInDegree(Node node) {
+        return targets.values().stream().filter(n -> n.equals(node)).count();
+    }
+
+    public long getOutDegree(Node node) {
+        return sources.values().stream().filter(n -> n.equals(node)).count();
+    }
+}
