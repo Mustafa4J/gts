@@ -1,0 +1,128 @@
+package de.hpi;
+
+import java.util.*;
+
+public class GraphMorphism {
+	static List<Map<Node, Node>> iterateInjective(de.hpi.Graph a, de.hpi.Graph b) {
+		// init
+		Map<Node, List<Node>> edges = new HashMap<>();
+		for (Node node : a.getNodes()) {
+			edges.put(node, new ArrayList<>(b.getNodes()));
+		}
+
+		Node currentKey = (Node) edges.keySet().toArray()[0];
+		List<Node> currentBs = edges.get(currentKey);
+		for (int j = 0; j <= currentBs.size(); j++) {
+			if (j != 0) {
+				currentBs.remove(currentBs.get(j - 1));
+			}
+		}
+		Node stayingNode = currentBs.get(0);
+		for (int i = 1; i < edges.keySet().size(); i++) {
+			edges.get((Node) edges.keySet().toArray()[i]).remove(stayingNode);
+		}
+
+		return new ArrayList<>();
+
+	}
+
+	static List<Map<Node, Node>> iterateInjective2(de.hpi.Graph a, de.hpi.Graph b) {
+		List<Map<Node, Node>> injectiveGraphs = new ArrayList<>();
+
+		Map<Node, Set<Node>> edges = new HashMap<>();
+		a.getNodes().forEach(node -> edges.put(node, b.getNodes()));
+
+		Set<Node> completedNodesB = new HashSet<>();
+		Set<Node> completedNodesA = new HashSet<>();
+		int counter = 0;
+
+		injectiveGraphs.add(new HashMap<>());
+		while (injectiveGraphs.get(counter).keySet().size() < a.getNodes().size()) {
+			if (edges.keySet().stream().anyMatch(n -> !completedNodesA.contains(n))) {
+				Node nodeA = edges.keySet().stream().filter(n -> !completedNodesA.contains(n)).findAny().get();
+				completedNodesA.add(nodeA);
+				Set<Node> nodesB = edges.get(nodeA);
+				if (nodesB.stream().anyMatch(n -> !completedNodesB.contains(n))) {
+					Node nodeB = nodesB.stream().filter(n -> !completedNodesB.contains(n)).findAny().get();
+					injectiveGraphs.get(injectiveGraphs.size() - 1).put(nodeA, nodeB);
+					completedNodesB.add(nodeB);
+				} else
+					break;
+			} else
+				break;
+		}
+
+		return a.getNodes().size() <= b.getNodes().size() ? injectiveGraphs : new ArrayList<>();
+	}
+
+	static List<Map<Node, Node>> monoIterator(Graph graphA, Graph graphB) {
+
+		Set<Node> setN = graphA.getNodes();
+		List<Node> listN = new ArrayList<>(setN);
+
+		List<Node> finalListNodesMaxInDegree = new ArrayList<>();
+		List<Node> finalListNodesMaxOutDegree = new ArrayList<>();
+
+		long nodeMaxOutDegree = 0;
+		for (int i = 0; i < setN.size(); i++) {
+			if (graphA.getOutDegree(listN.get(i)) >= nodeMaxOutDegree) {
+				finalListNodesMaxOutDegree.add(listN.get(i));
+				nodeMaxOutDegree = graphA.getOutDegree(listN.get(i));
+			}
+		}
+
+		for (int i = 0; i < finalListNodesMaxOutDegree.size(); i++) {
+			if (graphA.getOutDegree(finalListNodesMaxOutDegree.get(i)) < nodeMaxOutDegree) {
+				finalListNodesMaxOutDegree.remove(i);
+			}
+		}
+
+		for (int i = 0; i < finalListNodesMaxOutDegree.size(); i++) {
+			if (graphA.getOutDegree(finalListNodesMaxOutDegree.get(i)) >= nodeMaxOutDegree) {
+				nodeMaxOutDegree = graphA.getOutDegree(finalListNodesMaxOutDegree.get(i));
+			} else {
+				finalListNodesMaxOutDegree.remove(i);
+			}
+		}
+
+		for (Node node : finalListNodesMaxOutDegree) {
+			System.out.println("Node: " + node.name + " & OutDegreeEdges: " + graphA.getOutDegree(node));
+		}
+
+		long nodeMaxInDegree = 0;
+		for (int i = 0; i < setN.size(); i++) {
+			if (graphA.getInDegree(listN.get(i)) >= nodeMaxInDegree) {
+				finalListNodesMaxInDegree.add(listN.get(i));
+				nodeMaxInDegree = graphA.getInDegree(listN.get(i));
+			}
+		}
+
+		for (int i = 0; i < finalListNodesMaxInDegree.size(); i++) {
+			if (graphA.getInDegree(finalListNodesMaxInDegree.get(i)) < nodeMaxInDegree) {
+				finalListNodesMaxInDegree.remove(i);
+			}
+		}
+
+		for (int i = 0; i < finalListNodesMaxInDegree.size(); i++) {
+			if (graphA.getInDegree(finalListNodesMaxInDegree.get(i)) >= nodeMaxInDegree) {
+				nodeMaxInDegree = graphA.getInDegree(finalListNodesMaxInDegree.get(i));
+			} else {
+				finalListNodesMaxInDegree.remove(i);
+			}
+		}
+
+		for (Node node : finalListNodesMaxInDegree) {
+			System.out.println("Node: " + node.name + " & InDegreeEdges: " + graphA.getInDegree(node));
+		}
+
+		List<Map<Node, Node>> xx = new ArrayList<>();
+		return xx;
+	}
+
+	static List<Map<Node, Node>> isoIterator(Graph graphA, Graph graphB) {
+		if (graphA.getNodes().size() == graphB.getNodes().size()) {
+			return monoIterator(graphA, graphB);
+		} else
+			return new ArrayList<>();
+	}
+}
