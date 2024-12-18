@@ -1,0 +1,17 @@
+package de.hpi;
+
+public class Edge {
+    String name;
+
+    public Edge(){
+        this.name = String.valueOf(hashCode());
+    }
+
+    public Edge(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
